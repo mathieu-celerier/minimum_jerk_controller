@@ -3,5 +3,6 @@ add_fsm_state_simple(MinimumJerkController_Switch)
 add_fsm_state_simple(MinimumJerkController_Torque)
 add_fsm_state_simple(MinimumJerkController_Fitts)
 add_fsm_state_simple(MinimumJerkController_EETask)
+add_fsm_state_simple(MinimumJerkController_WrongInit)
 
 add_fsm_data_directory(data)

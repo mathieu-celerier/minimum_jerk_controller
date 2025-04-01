@@ -1,11 +1,11 @@
-#include "MinimumJerkController_Switch.h"
+#include "MinimumJerkController_WrongInit.h"
 
 #include "../MinimumJerkController.h"
 #include <Eigen/src/Geometry/Quaternion.h>
 
-void MinimumJerkController_Switch::configure(const mc_rtc::Configuration & config) {}
+void MinimumJerkController_WrongInit::configure(const mc_rtc::Configuration & config) {}
 
-void MinimumJerkController_Switch::start(mc_control::fsm::Controller & ctl_)
+void MinimumJerkController_WrongInit::start(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<MinimumJerkController &>(ctl_);
   auto & robot = ctl.robot();
@@ -31,6 +31,7 @@ void MinimumJerkController_Switch::start(mc_control::fsm::Controller & ctl_)
   ctl.minJerkTask->fitts_b(0.32);
   ctl.minJerkTask->fitts_a(-0.09);
   ctl.minJerkTask->react_time(0.0);
+  ctl.minJerkTask->setDisturbedInit(true);
 
   ctl.minJerkTask->setTarget(initPos_ + Eigen::Vector3d(0.1, 0.2, 0.0));
   ctl.compPostureTask->stiffness(100.0);
@@ -50,13 +51,14 @@ void MinimumJerkController_Switch::start(mc_control::fsm::Controller & ctl_)
   // }
 
   ctl.gui()->addElement({"Controller"}, mc_rtc::gui::Checkbox("Trigger next target", gui_switch_));
+  ctl.logger().addLogEntry("MJTaskInit", this, [this]() { return init_; });
 
   ctl.datastore().assign<std::string>("ControlMode", "Torque");
-  mc_rtc::log::success("[MinJerkCtrl] Switched to Switch state - {} controlled",
+  mc_rtc::log::success("[MinJerkCtrl] Switched to WrongInit state - {} controlled",
                        ctl.datastore().get<std::string>("ControlMode"));
 }
 
-bool MinimumJerkController_Switch::run(mc_control::fsm::Controller & ctl_)
+bool MinimumJerkController_WrongInit::run(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<MinimumJerkController &>(ctl_);
   if(ctl.minJerkTask->eval().norm() < 0.03 and ctl.minJerkTask->speed().norm() < 0.01 and gui_switch_)
@@ -82,9 +84,9 @@ bool MinimumJerkController_Switch::run(mc_control::fsm::Controller & ctl_)
   return false;
 }
 
-void MinimumJerkController_Switch::teardown(mc_control::fsm::Controller & ctl_)
+void MinimumJerkController_WrongInit::teardown(mc_control::fsm::Controller & ctl_)
 {
   auto & ctl = static_cast<MinimumJerkController &>(ctl_);
 }
 
-EXPORT_SINGLE_STATE("MinimumJerkController_Switch", MinimumJerkController_Switch)
+EXPORT_SINGLE_STATE("MinimumJerkController_WrongInit", MinimumJerkController_WrongInit)

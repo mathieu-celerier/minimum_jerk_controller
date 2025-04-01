@@ -37,11 +37,11 @@ states: {}
 # Transitions map
 transitions:
   - [MinimumJerkController_Initial, OK, MinimumJerkController_Torque, Strict]
-  - [MinimumJerkController_Initial, OK, MinimumJerkController_Switch, Strict]
   - [MinimumJerkController_Initial, OK, MinimumJerkController_Fitts, Strict]
+  - [MinimumJerkController_Initial, OK, MinimumJerkController_Switch, Strict]
   - [MinimumJerkController_Torque, OK, MinimumJerkController_Torque, Strict]
-  - [MinimumJerkController_Switch, OK, MinimumJerkController_Switch, Strict]
   - [MinimumJerkController_Fitts, OK, MinimumJerkController_Fitts, Strict]
+  - [MinimumJerkController_Switch, OK, MinimumJerkController_Switch, Strict]
 # Initial state
 init: MinimumJerkController_Initial
 
@@ -51,3 +51,5 @@ ObserverPipelines:
       - type: Encoder
         config:
           velocity: encoderVelocities
+
+Plugins: [ExternalForcesEstimator]

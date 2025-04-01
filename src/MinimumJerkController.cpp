@@ -5,10 +5,11 @@ MinimumJerkController::MinimumJerkController(mc_rbdyn::RobotModulePtr rm,
                                              const mc_rtc::Configuration & config)
 : mc_control::fsm::Controller(rm, dt, config, Backend::TVM)
 {
-  // Use dynamics constraint
   solver().removeConstraintSet(dynamicsConstraint);
+  // Initialize the constraints
+  selfCollisionConstraint->setCollisionsDampers(solver(), {1.8, 70.0});
   dynamicsConstraint = mc_rtc::unique_ptr<mc_solver::DynamicsConstraint>(
-      new mc_solver::DynamicsConstraint(robots(), 0, solver().dt(), {0.1, 0.01, 0.5}, 0.9, false, true));
+      new mc_solver::DynamicsConstraint(robots(), 0, {0.1, 0.01, 0.0, 1.8, 70.0}, 0.9, true));
   solver().addConstraintSet(dynamicsConstraint);
 
   solver().removeTask(getPostureTask(robot().name()));
@@ -32,8 +33,7 @@ MinimumJerkController::MinimumJerkController(mc_rbdyn::RobotModulePtr rm,
   // std::cout << "---------------------------------\n";
   // // End
 
-  minJerkTask =
-      std::make_shared<mc_tasks::MinimumJerkTask>("FT_sensor_wrench", robots(), robot().robotIndex(), 10000.0);
+  minJerkTask = std::make_shared<mc_tasks::MinimumJerkTask>("DS4_tool", robots(), robot().robotIndex(), 10000.0);
   // ctl.solver().addTask(ctl.minJerkTask);
 
   datastore().make<std::string>("ControlMode", "Position");
